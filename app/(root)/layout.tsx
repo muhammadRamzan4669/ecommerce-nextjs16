@@ -1,0 +1,20 @@
+import Footer from "@/components/layout/footer";
+import Header from "@/components/layout/header";
+import type { Metadata } from "next";
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <div className="flex h-screen flex-col select-none">
+      <Header />
+      <main className="flex-1 wrapper">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
