@@ -8,6 +8,5 @@ export default async function Home() {
   const latestProducts = await getLatestProducts();
   await delay(2000);
 
-
   return <div><ProductList products={latestProducts} title={'Products'} limit={4} /></div>
 }

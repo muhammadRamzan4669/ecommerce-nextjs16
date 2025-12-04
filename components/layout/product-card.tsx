@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function ProductCard({ product }: { product: Product }) {
 
   return <article className='s-[200px] flex-col flex'>
-    <Link href={`/products/${product.slug}`} className='block group'>
+    <Link href={`/product/${product.slug}`} className='block group'>
       <figure className='relative'>
         <Image
           src={product.images[0]}
