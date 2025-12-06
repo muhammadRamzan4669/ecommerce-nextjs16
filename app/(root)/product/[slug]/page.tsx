@@ -10,8 +10,16 @@ type Props = {
 };
 
 // Generate static params for product pages
+// Returns at least one placeholder when DB is unavailable during build
+// This satisfies Next.js 16 cacheComponents requirement
 export async function generateStaticParams() {
   const slugs = await getAllProductSlugs();
+  
+  // If DB connection fails during build, return a placeholder
+  // The actual page will be generated on-demand and cached
+  if (slugs.length === 0) {
+    return [{ slug: "_placeholder" }];
+  }
   
   return slugs.map((slug) => ({
     slug,

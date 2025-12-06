@@ -36,7 +36,7 @@
 //
 // if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
 //
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from './generated/prisma/client';
 import ws from 'ws';

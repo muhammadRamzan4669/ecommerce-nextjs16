@@ -1,13 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-/*
- ---break---
- */
-@custom-variant dark (&:is(.dark *));
 
 /*
  * Custom dark mode variant
- * Uses class-based dark mode strategy
+ * Uses class-based dark mode strategy (Tailwind v4 syntax)
  */
 @variant dark (&:is(.dark *));
 

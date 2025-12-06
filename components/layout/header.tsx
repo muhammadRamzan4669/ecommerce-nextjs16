@@ -19,7 +19,7 @@ export default async function Header() {
         </div>
         <div className="space-x-3.5 flex-start">
           <ThemeToggle />
-          <Link href="/" aria-label="Shopping Cart">
+          <Link href="/cart" aria-label="Shopping Cart">
             <ShoppingCart className="size-6" />
           </Link>
           <UserButton user={user} />

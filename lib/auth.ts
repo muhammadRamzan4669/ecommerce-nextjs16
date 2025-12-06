@@ -13,10 +13,10 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     
-    // Custom password hashing with bcrypt (10 salt rounds - same as seed)
+    // Custom password hashing with bcrypt (12 salt rounds - OWASP recommended)
     password: {
       hash: async (password) => {
-        return await hash(password, 10);
+        return await hash(password, 12);
       },
       verify: async ({ password, hash: passwordHash }) => {
         return await compare(password, passwordHash);

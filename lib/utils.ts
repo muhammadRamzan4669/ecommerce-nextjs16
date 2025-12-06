@@ -55,3 +55,14 @@ export function roundTo2(value: number | string): number {
     throw new Error('Value is not a number or string')
   }
 }
+
+/**
+ * Format currency with proper symbol and decimal places
+ */
+export function formatCurrency(value: number | string): string {
+  const numValue = typeof value === 'string' ? Number(value) : value
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(numValue)
+}
