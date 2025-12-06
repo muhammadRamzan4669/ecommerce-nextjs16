@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { integralCF } from '@/lib/fonts'
 import { CheckCircle2 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { createOrder } from '@/lib/actions/order.actions'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Order Confirmed',
@@ -14,6 +16,16 @@ export default async function CheckoutSuccessPage({
 }) {
   const params = await searchParams
   const checkoutId = params.checkout_id || params.session || 'unknown'
+  
+  // Create order from cart
+  const result = await createOrder()
+  
+  // If order creation failed (e.g., no cart or not logged in), redirect
+  if (!result.success && result.message === 'Your cart is empty') {
+    redirect('/')
+  }
+  
+  const orderId = result.orderId || checkoutId
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-16 lg:py-24">
@@ -36,7 +48,7 @@ export default async function CheckoutSuccessPage({
         {/* Order ID */}
         <div className="bg-[#F0F0F0] dark:bg-[#1F1F1F] rounded-[20px] p-6 mb-8">
           <p className="text-sm text-black/60 dark:text-white/60 mb-2">Order Reference</p>
-          <p className="font-bold text-lg font-mono">{checkoutId}</p>
+          <p className="font-bold text-lg font-mono">{typeof orderId === 'string' ? orderId.slice(0, 8) : orderId}...</p>
         </div>
 
         {/* What's Next */}

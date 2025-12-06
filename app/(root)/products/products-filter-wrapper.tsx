@@ -16,7 +16,7 @@ export default function ProductsFilterWrapper({ categories }: ProductsFilterWrap
       {/* Mobile Filter Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden w-full h-12 border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium flex items-center justify-center gap-2"
+        className="lg:hidden flex items-center justify-center gap-2 h-12 px-6 border border-black/10 dark:border-white/10 rounded-[62px] text-sm font-medium hover:bg-[#F0F0F0] dark:hover:bg-[#1F1F1F] transition-colors"
       >
         <SlidersHorizontal className="w-5 h-5" />
         Filters
@@ -24,26 +24,30 @@ export default function ProductsFilterWrapper({ categories }: ProductsFilterWrap
 
       {/* Mobile Filter Drawer */}
       {isOpen && (
-        <>
+        <div className="lg:hidden fixed inset-0 z-50">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Drawer */}
-          <div className="fixed inset-y-0 right-0 w-[300px] max-w-[85vw] bg-white dark:bg-black z-50 lg:hidden overflow-y-auto">
-            <div className="flex items-center justify-between h-[60px] px-4 border-b border-black/10 dark:border-white/10">
+          <div className="absolute right-0 top-0 h-full w-full max-w-[320px] bg-white dark:bg-[#0A0A0A] overflow-y-auto">
+            <div className="sticky top-0 flex items-center justify-between p-4 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A]">
               <span className="font-bold text-lg">Filters</span>
-              <button onClick={() => setIsOpen(false)} className="p-2 -mr-2">
-                <X className="w-6 h-6" />
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#F0F0F0] dark:hover:bg-[#1F1F1F] transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
+
             <div className="p-4">
-              <ProductFilters categories={categories} />
+              <ProductFilters categories={categories} onApply={() => setIsOpen(false)} />
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

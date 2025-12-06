@@ -1,4 +1,4 @@
-import prisma from "../prisma";
+import prisma, { prismaBase } from "../prisma";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -208,6 +208,33 @@ export async function searchProducts(query: string) {
     return JSON.parse(JSON.stringify(products));
   } catch (error) {
     console.error("Error searching products:", error);
+    return [];
+  }
+}
+
+// Get product reviews
+export async function getProductReviews(productId: string) {
+  "use cache";
+  cacheTag("reviews", `reviews-${productId}`);
+  cacheLife("hours");
+
+  try {
+    const reviews = await prismaBase.review.findMany({
+      where: { productId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return JSON.parse(JSON.stringify(reviews));
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
     return [];
   }
 }

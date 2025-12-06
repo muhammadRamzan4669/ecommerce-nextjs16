@@ -45,13 +45,24 @@ import { PrismaClient } from './generated/prisma/client';
 if (typeof WebSocket !== 'undefined') {
   neonConfig.webSocketConstructor = WebSocket;
 }
-const prismaClientSingleton = () => {
-  const connectionString = process.env.DATABASE_URL;
 
+const connectionString = process.env.DATABASE_URL;
+
+// Create base Prisma client singleton (for models that don't need extensions)
+const basePrismaClientSingleton = () => {
   const adapter = new PrismaNeon({ connectionString });
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+};
+
+// Create extended Prisma client singleton (with computed fields for products)
+const extendedPrismaClientSingleton = () => {
+  const adapter = new PrismaNeon({ connectionString });
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   }).$extends({
     result: {
       product: {
@@ -71,14 +82,21 @@ const prismaClientSingleton = () => {
     },
   });
 };
-// Declare global type for singleton
+
+// Declare global type for singletons
 declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+  prismaGlobal: ReturnType<typeof extendedPrismaClientSingleton>;
+  prismaBaseGlobal: ReturnType<typeof basePrismaClientSingleton>;
 } & typeof global;
+
 // Use singleton pattern to prevent multiple instances during hot-reloading
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
+const prisma = globalThis.prismaGlobal ?? extendedPrismaClientSingleton();
+export const prismaBase = globalThis.prismaBaseGlobal ?? basePrismaClientSingleton();
+
 export default prisma;
+
 // Store in global only in development to survive Next.js hot reloads
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prismaGlobal = prisma;
+  globalThis.prismaBaseGlobal = prismaBase;
 }

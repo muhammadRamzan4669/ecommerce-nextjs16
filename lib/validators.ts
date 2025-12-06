@@ -41,6 +41,8 @@ export const cartItemSchema = z.object({
   qty: z.number().int().nonnegative('Quantity must be a positive number'),
   image: z.string().min(1, 'Image is required'),
   price: currency,
+  color: z.string().optional(),
+  size: z.string().optional(),
 })
 
 export const insertCartSchema = z.object({
@@ -61,4 +63,20 @@ export const shippingAddressSchema = z.object({
   postalCode: z.string().min(3, 'Postal code must be at least 3 characters'),
   country: z.string().min(2, 'Country must be at least 2 characters'),
   state: z.string().optional(),
+})
+
+// Newsletter subscription schema
+export const newsletterSchema = z.object({
+  email: z.email('Please enter a valid email address'),
+})
+
+// Order schema
+export const insertOrderSchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
+  shippingAddress: shippingAddressSchema,
+  paymentMethod: z.string().default('Polar'),
+  itemsPrice: currency,
+  shippingPrice: currency,
+  taxPrice: currency,
+  totalPrice: currency,
 })

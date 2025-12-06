@@ -8,6 +8,7 @@ export {
   getFilteredProducts,
   getAllCategories,
   searchProducts,
+  getProductReviews,
 } from '../queries/product.queries';
 
 export type { ProductFilterParams } from '../queries/product.queries';

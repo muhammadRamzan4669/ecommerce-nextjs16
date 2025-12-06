@@ -97,8 +97,12 @@ export default async function CartPage() {
                     
                     {/* Meta info */}
                     <div className="mt-1 space-y-1 text-sm text-black/60 dark:text-white/60">
-                      <p>Size: <span className="text-black dark:text-white">Large</span></p>
-                      <p>Color: <span className="text-black dark:text-white">White</span></p>
+                      {item.size && (
+                        <p>Size: <span className="text-black dark:text-white">{item.size}</span></p>
+                      )}
+                      {item.color && (
+                        <p>Color: <span className="text-black dark:text-white">{item.color}</span></p>
+                      )}
                     </div>
 
                     {/* Price - Mobile */}

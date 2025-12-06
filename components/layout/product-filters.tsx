@@ -7,6 +7,7 @@ import { SlidersHorizontal, ChevronDown, ChevronUp, X } from "lucide-react";
 type FilterSidebarProps = {
   categories: string[];
   className?: string;
+  onApply?: () => void;
 };
 
 const colors = [
@@ -32,7 +33,7 @@ const sortOptions = [
   { label: "Highest Rated", value: "rating" },
 ];
 
-export function ProductFilters({ categories, className }: FilterSidebarProps) {
+export function ProductFilters({ categories, className, onApply }: FilterSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -83,12 +84,14 @@ export function ProductFilters({ categories, className }: FilterSidebarProps) {
     startTransition(() => {
       const queryString = createQueryString(params);
       router.push(`/products${queryString ? `?${queryString}` : ""}`);
+      onApply?.();
     });
   };
 
   const clearAllFilters = () => {
     startTransition(() => {
       router.push("/products");
+      onApply?.();
     });
   };
 

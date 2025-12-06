@@ -49,6 +49,9 @@ export default function ProductOptions({ product, colors, sizes }: ProductOption
 
   const handleAddToCart = () => {
     startTransition(async () => {
+      const selectedColorValue = colorOptions[selectedColor]?.name || undefined;
+      const selectedSizeValue = sizeOptions[selectedSize] || undefined;
+      
       const item: CartItem = {
         productId: product.id,
         name: product.name,
@@ -56,6 +59,8 @@ export default function ProductOptions({ product, colors, sizes }: ProductOption
         qty: quantity,
         image: product.images[0],
         price: product.price,
+        color: selectedColorValue,
+        size: selectedSizeValue,
       };
 
       const result = await addItemToCart(item);

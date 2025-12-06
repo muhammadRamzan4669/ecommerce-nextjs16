@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Mail, Loader, CheckCircle } from "lucide-react";
+import { subscribeToNewsletter } from "@/lib/actions/newsletter.actions";
 
 export default function NewsletterForm() {
   const [email, setEmail] = useState("");
@@ -20,15 +21,16 @@ export default function NewsletterForm() {
 
     startTransition(async () => {
       try {
-        // Simulate API call - in production, replace with actual newsletter API
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const result = await subscribeToNewsletter(email);
 
-        // Here you would typically call your newsletter service API
-        // For example: await subscribeToNewsletter(email);
-
-        setStatus("success");
-        setMessage("Thank you for subscribing!");
-        setEmail("");
+        if (result.success) {
+          setStatus("success");
+          setMessage(result.message);
+          setEmail("");
+        } else {
+          setStatus("error");
+          setMessage(result.message);
+        }
 
         // Reset status after 5 seconds
         setTimeout(() => {

@@ -1,10 +1,11 @@
-import { getProductBySlug, getAllProductSlugs } from "@/lib/actions/product.actions";
+import { getProductBySlug, getAllProductSlugs, getProductReviews } from "@/lib/actions/product.actions";
 import { integralCF } from "@/lib/fonts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import ProductOptions from "@/components/product-options";
 import ImageGallery from "@/components/image-gallery";
+import ProductReviews from "@/components/product-reviews";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -51,8 +52,13 @@ export default async function ProductDetailsPage({ params }: Props) {
     notFound();
   }
 
-  const discountPercentage = 40;
-  const originalPrice = Math.round(Number(product.price) * (100 / (100 - discountPercentage)));
+  // Fetch reviews
+  const reviews = await getProductReviews(product.id);
+
+  const discountPercentage = product.discount || 0;
+  const originalPrice = discountPercentage > 0 
+    ? Math.round(Number(product.price) * (100 / (100 - discountPercentage)))
+    : null;
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
@@ -112,12 +118,16 @@ export default async function ProductDetailsPage({ params }: Props) {
             <span className="font-bold text-2xl lg:text-[32px] lg:leading-[43px]">
               ${product.price}
             </span>
-            <span className="font-bold text-2xl lg:text-[32px] lg:leading-[43px] text-black/30 dark:text-white/30 line-through">
-              ${originalPrice}
-            </span>
-            <div className="px-3.5 py-1.5 bg-[#FF3333]/10 rounded-[62px]">
-              <span className="text-xs lg:text-sm font-medium text-[#FF3333]">-{discountPercentage}%</span>
-            </div>
+            {originalPrice && (
+              <>
+                <span className="font-bold text-2xl lg:text-[32px] lg:leading-[43px] text-black/30 dark:text-white/30 line-through">
+                  ${originalPrice}
+                </span>
+                <div className="px-3.5 py-1.5 bg-[#FF3333]/10 rounded-[62px]">
+                  <span className="text-xs lg:text-sm font-medium text-[#FF3333]">-{discountPercentage}%</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Description */}
@@ -135,28 +145,18 @@ export default async function ProductDetailsPage({ params }: Props) {
               images: product.images,
               stock: product.stock,
             }}
+            colors={product.colors}
+            sizes={product.sizes}
           />
         </div>
       </div>
 
       {/* Product Tabs Section */}
-      <div className="border-t border-black/10 dark:border-white/10 py-8 lg:py-12">
-        <div className="flex items-center justify-center gap-4 lg:gap-8 mb-8">
-          <button className="pb-3 border-b-2 border-black dark:border-white text-base lg:text-xl font-medium">
-            Product Details
-          </button>
-          <button className="pb-3 border-b-2 border-transparent text-base lg:text-xl text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">
-            Rating & Reviews
-          </button>
-          <button className="pb-3 border-b-2 border-transparent text-base lg:text-xl text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">
-            FAQs
-          </button>
-        </div>
-        
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="text-black/60 dark:text-white/60">{product.description}</p>
-        </div>
-      </div>
+      <ProductReviews 
+        reviews={reviews} 
+        productDescription={product.description}
+        productId={product.id}
+      />
     </div>
   );
 }
