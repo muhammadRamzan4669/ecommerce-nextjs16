@@ -1,5 +1,11 @@
 import { getSession } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Profile",
+  description: "View and manage your profile information",
+};
 
 export default async function ProfilePage() {
   // Get the current session
@@ -71,9 +77,9 @@ export default async function ProfilePage() {
           <div className="border-t pt-6">
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>🔒 Protected Page:</strong> This page is only
-                accessible to authenticated users. If you weren&apos;t signed
-                in, the middleware redirected you to{" "}
+                <strong>🔒 Protected Page:</strong> This page is only accessible
+                to authenticated users. If you weren&apos;t signed in, the
+                middleware redirected you to{" "}
                 <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">
                   /sign-in?callbackUrl=/user/profile
                 </code>

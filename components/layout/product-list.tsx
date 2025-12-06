@@ -1,18 +1,41 @@
-import { Product } from "@/types";
+import type { Product } from "@/types";
 import ProductCard from "./product-card";
 import { integralCF } from "@/lib/fonts";
 
-export default function ProductList({ title, products, limit }: { title?: string; products: Product[]; limit?: number }) {
-  const limitedProducts = products ? products.slice(0, limit) : products;
+type ProductListProps = {
+  title?: string;
+  products: Product[];
+  limit?: number;
+};
 
-  return <>
-    <h2 className={`${integralCF.className} text-center  font-bold text-[32px] flex-col flex gap-8 lg:gap-[55px] lg:text-[48px]`}>{title}</h2 >
+export default function ProductList({
+  title,
+  products,
+  limit,
+}: ProductListProps) {
+  const limitedProducts = limit ? products.slice(0, limit) : products;
 
-    <ul className='grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-      {limitedProducts.length > 0 ?
-        limitedProducts.map((product: Product) => <ProductCard key={product.name} product={product} />)
-        : <>No Products Found</>
-      }
-    </ul>
-  </>
+  return (
+    <>
+      {title && (
+        <h2
+          className={`${integralCF.className} text-center font-bold text-[32px] flex-col flex gap-8 lg:gap-[55px] lg:text-[48px]`}
+        >
+          {title}
+        </h2>
+      )}
+
+      <ul className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {limitedProducts.length > 0 ? (
+          limitedProducts.map((product: Product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))
+        ) : (
+          <li className="col-span-full text-center text-muted-foreground">
+            No Products Found
+          </li>
+        )}
+      </ul>
+    </>
+  );
 }

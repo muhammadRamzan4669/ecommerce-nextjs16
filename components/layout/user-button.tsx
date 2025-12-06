@@ -1,26 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleUserRound, LogOut, User } from "lucide-react";
 import { signOut } from "@/lib/actions/user.actions";
 import Link from "next/link";
 
-interface UserButtonProps {
+type UserButtonProps = {
   user: {
     name: string | null;
     email: string;
     role?: string;
   } | null;
-}
+};
 
 export default function UserButton({ user }: UserButtonProps) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useActionState(
+    (_prevState: boolean, _action: boolean) => !_prevState,
+    false
+  );
 
   const handleSignOut = async () => {
-    setIsLoading(true);
     try {
       await signOut();
       router.push("/");
@@ -28,14 +29,13 @@ export default function UserButton({ user }: UserButtonProps) {
     } catch (error) {
       console.error("Sign out error:", error);
     } finally {
-      setIsLoading(false);
       setIsOpen(false);
     }
   };
 
   if (!user) {
     return (
-      <Link href="/sign-in">
+      <Link href="/sign-in" aria-label="Sign in">
         <CircleUserRound className="size-6" />
       </Link>
     );
@@ -45,9 +45,10 @@ export default function UserButton({ user }: UserButtonProps) {
     <div className="relative">
       {/* User Avatar Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         aria-label="User menu"
+        aria-expanded={isOpen}
       >
         <CircleUserRound className="size-6" />
       </button>
@@ -59,6 +60,7 @@ export default function UserButton({ user }: UserButtonProps) {
           <div
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
 
           {/* Menu */}
@@ -89,11 +91,10 @@ export default function UserButton({ user }: UserButtonProps) {
 
               <button
                 onClick={handleSignOut}
-                disabled={isLoading}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors disabled:opacity-50"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors"
               >
                 <LogOut className="size-4" />
-                <span>{isLoading ? "Signing out..." : "Sign Out"}</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>

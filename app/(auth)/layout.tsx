@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { integralCF } from "@/lib/fonts";
 
@@ -28,7 +27,7 @@ export default function AuthLayout({
       {/* Auth Footer */}
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
         <div className="wrapper">
-          © {new Date().getFullYear()} LYNX.SHOP. All rights reserved.
+          © 2025 LYNX.SHOP. All rights reserved.
         </div>
       </footer>
     </div>

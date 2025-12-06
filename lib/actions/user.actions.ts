@@ -1,6 +1,6 @@
 "use server";
 
-import { headers as getHeaders, cookies } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { auth } from "@/lib/auth";
 import { formatError } from "@/lib/utils";
 import prisma from "@/lib/prisma";
@@ -155,11 +155,11 @@ export async function signOut() {
   try {
     console.log("[Server Action] Attempting sign out");
     
-    const headers = await getHeaders();
+    const headersList = await headers();
     
     // Call Better Auth sign out
     await auth.api.signOut({
-      headers,
+      headers: headersList,
     });
 
     // Clear the session cookie
@@ -188,11 +188,11 @@ export async function signOut() {
  */
 export async function getSession() {
   try {
-    const headers = await getHeaders();
+    const headersList = await headers();
     
     // Better Auth provides a helper to get session from request
     const session = await auth.api.getSession({
-      headers,
+      headers: headersList,
     });
 
     if (!session || !session.user) {
@@ -215,14 +215,14 @@ export async function getSession() {
       return null;
     }
 
-    // Return session with role included
-    return {
+    // Return session with role included - serialize for React 19
+    return JSON.parse(JSON.stringify({
       ...session,
       user: {
         ...session.user,
         role: user.role,
       },
-    };
+    }));
   } catch (error) {
     return null;
   }

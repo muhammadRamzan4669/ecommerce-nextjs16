@@ -4,23 +4,20 @@ import type { NextRequest } from "next/server";
 // Define protected routes that require authentication
 const protectedRoutes = [
   "/user/profile",
-  "/user/orders", 
+  "/user/orders",
   "/checkout",
   "/admin",
-];
+] as const;
 
 // Define public routes that should redirect to home if already authenticated
-const authRoutes = [
-  "/sign-in",
-  "/sign-up",
-];
+const authRoutes = ["/sign-in", "/sign-up"] as const;
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Check if user has session cookie
   const sessionToken = request.cookies.get("better-auth.session_token");
-  const isAuthenticated = !!sessionToken;
+  const isAuthenticated = Boolean(sessionToken?.value);
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -43,10 +40,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return NextResponse.next();
+  // Generate session cart ID if not present
+  const response = NextResponse.next();
+  const sessionCartId = request.cookies.get("sessionCartId");
+
+  if (!sessionCartId) {
+    const newSessionCartId = crypto.randomUUID();
+    response.cookies.set("sessionCartId", newSessionCartId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+  }
+
+  return response;
 }
 
-// Configure which routes the middleware should run on
+// Configure which routes the proxy should run on
 export const config = {
   matcher: [
     /*

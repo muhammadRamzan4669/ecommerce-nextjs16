@@ -1,69 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signInWithCredentials } from "@/lib/actions/user.actions";
 import { signInFormSchema } from "@/lib/validators";
 import { Button } from "@/components/ui/button";
 
+type FormState = {
+  error?: string;
+  fieldErrors?: {
+    email?: string;
+    password?: string;
+  };
+};
+
 export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{
-    email?: string;
-    password?: string;
-  }>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, formAction, isPending] = useActionState<FormState, FormData>(
+    async (_prevState: FormState, formData: FormData) => {
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setFieldErrors({});
-    setIsLoading(true);
-
-    try {
-      // Validate form with Zod
-      const validationResult = signInFormSchema.safeParse({
-        email,
-        password,
-      });
-
-      if (!validationResult.success) {
-        const errors: { email?: string; password?: string } = {};
-        validationResult.error.issues.forEach((issue) => {
-          if (issue.path[0]) {
-            errors[issue.path[0] as "email" | "password"] = issue.message;
-          }
+      try {
+        // Validate form with Zod
+        const validationResult = signInFormSchema.safeParse({
+          email,
+          password,
         });
-        setFieldErrors(errors);
-        setIsLoading(false);
-        return;
-      }
 
-      const result = await signInWithCredentials({
-        email,
-        password,
-        callbackUrl,
-      });
+        if (!validationResult.success) {
+          const errors: { email?: string; password?: string } = {};
+          validationResult.error.issues.forEach((issue) => {
+            if (issue.path[0]) {
+              errors[issue.path[0] as "email" | "password"] = issue.message;
+            }
+          });
+          return { fieldErrors: errors };
+        }
 
-      if (result.success) {
-        router.push(callbackUrl);
-        router.refresh();
-      } else {
-        setError(result.message || "Invalid email or password");
+        const result = await signInWithCredentials({
+          email,
+          password,
+          callbackUrl,
+        });
+
+        if (result.success) {
+          router.push(callbackUrl);
+          router.refresh();
+          return {};
+        } else {
+          return { error: result.message || "Invalid email or password" };
+        }
+      } catch (err) {
+        return { error: "An error occurred. Please try again." };
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    {}
+  );
 
   return (
     <div className="space-y-6">
@@ -76,10 +73,14 @@ export default function SignInPage() {
       </div>
 
       {/* Sign In Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md">
-            {error}
+      <form action={formAction} className="space-y-4">
+        {state.error && (
+          <div 
+            className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md"
+            role="alert"
+            aria-live="assertive"
+          >
+            {state.error}
           </div>
         )}
 
@@ -89,18 +90,21 @@ export default function SignInPage() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
             placeholder="admin@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
-            disabled={isLoading}
+            disabled={isPending}
+            aria-invalid={!!state.fieldErrors?.email}
+            aria-describedby={state.fieldErrors?.email ? "email-error" : undefined}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
-              fieldErrors.email ? "border-red-500" : ""
+              state.fieldErrors?.email ? "border-red-500" : ""
             }`}
           />
-          {fieldErrors.email && (
-            <p className="text-sm text-red-500">{fieldErrors.email}</p>
+          {state.fieldErrors?.email && (
+            <p id="email-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+              {state.fieldErrors.email}
+            </p>
           )}
         </div>
 
@@ -110,23 +114,26 @@ export default function SignInPage() {
           </label>
           <input
             id="password"
+            name="password"
             type="password"
             placeholder="••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
-            disabled={isLoading}
+            disabled={isPending}
+            aria-invalid={!!state.fieldErrors?.password}
+            aria-describedby={state.fieldErrors?.password ? "password-error" : undefined}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
-              fieldErrors.password ? "border-red-500" : ""
+              state.fieldErrors?.password ? "border-red-500" : ""
             }`}
           />
-          {fieldErrors.password && (
-            <p className="text-sm text-red-500">{fieldErrors.password}</p>
+          {state.fieldErrors?.password && (
+            <p id="password-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+              {state.fieldErrors.password}
+            </p>
           )}
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign In"}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Signing in..." : "Sign In"}
         </Button>
       </form>
 
