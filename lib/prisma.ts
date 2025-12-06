@@ -39,10 +39,12 @@
 import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from './generated/prisma/client';
-import ws from 'ws';
-// Configure WebSocket for Neon (required for Node.js v21 and earlier)
-// This enables transaction and session support via WebSocket connections
-neonConfig.webSocketConstructor = ws;
+
+// For Node.js 22+ (Next.js 16), use native WebSocket
+// For older Node.js versions, you would need to use 'ws' package instead
+if (typeof WebSocket !== 'undefined') {
+  neonConfig.webSocketConstructor = WebSocket;
+}
 const prismaClientSingleton = () => {
   const connectionString = process.env.DATABASE_URL;
 
