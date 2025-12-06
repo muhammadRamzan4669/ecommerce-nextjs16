@@ -1,7 +1,6 @@
 'use client'
 
 import { removeItemFromCart } from '@/lib/actions/cart.actions'
-import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
@@ -22,15 +21,13 @@ export default function DeleteFromCart({ productId }: { productId: string }) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
       onClick={handleDelete}
       disabled={isPending}
-      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+      className="p-2 text-[#FF3333] hover:bg-[#FF3333]/10 rounded-lg transition-colors disabled:opacity-50"
+      aria-label="Remove item from cart"
     >
-      <Trash2 className="h-4 w-4" />
-      <span className="sr-only">Delete item</span>
-    </Button>
+      <Trash2 className="w-5 h-5 lg:w-6 lg:h-6" />
+    </button>
   )
 }

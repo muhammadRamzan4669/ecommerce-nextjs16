@@ -16,9 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Loader, ArrowRight, ArrowLeft } from 'lucide-react'
 
 type ShippingAddress = z.infer<typeof shippingAddressSchema>
 
@@ -44,126 +42,160 @@ export default function ShippingAddressForm({ address }: { address?: ShippingAdd
 
       if (result.success) {
         toast.success(result.message)
-        router.push('/checkout/payment')
+        // Redirect to Polar checkout
+        router.push('/api/checkout?productId=cart')
       } else {
         toast.error(result.message)
       }
     })
   }
 
+  const inputClassName = "w-full h-12 px-4 bg-[#F0F0F0] dark:bg-[#1F1F1F] rounded-[62px] text-base placeholder:text-black/40 dark:placeholder:text-white/40 outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 transition-all border-0"
+
   return (
-    <Card>
-      <CardContent className="p-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <FormField
+          control={form.control}
+          name="fullName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm text-black/60 dark:text-white/60">Full Name</FormLabel>
+              <FormControl>
+                <input 
+                  placeholder="John Doe" 
+                  className={inputClassName}
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage className="text-[#FF3333]" />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="streetAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Street Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="123 Main St" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="streetAddress"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm text-black/60 dark:text-white/60">Street Address</FormLabel>
+              <FormControl>
+                <input 
+                  placeholder="123 Main Street, Apt 4B" 
+                  className={inputClassName}
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage className="text-[#FF3333]" />
+            </FormItem>
+          )}
+        />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="New York" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm text-black/60 dark:text-white/60">City</FormLabel>
+                <FormControl>
+                  <input 
+                    placeholder="New York" 
+                    className={inputClassName}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage className="text-[#FF3333]" />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State/Province (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="NY" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm text-black/60 dark:text-white/60">State/Province</FormLabel>
+                <FormControl>
+                  <input 
+                    placeholder="NY" 
+                    className={inputClassName}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage className="text-[#FF3333]" />
+              </FormItem>
+            )}
+          />
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="postalCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Postal Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="10001" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <FormField
+            control={form.control}
+            name="postalCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm text-black/60 dark:text-white/60">Postal Code</FormLabel>
+                <FormControl>
+                  <input 
+                    placeholder="10001" 
+                    className={inputClassName}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage className="text-[#FF3333]" />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="United States" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm text-black/60 dark:text-white/60">Country</FormLabel>
+                <FormControl>
+                  <input 
+                    placeholder="United States" 
+                    className={inputClassName}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage className="text-[#FF3333]" />
+              </FormItem>
+            )}
+          />
+        </div>
 
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={isPending}
-              >
-                {isPending ? 'Saving...' : 'Continue to Payment'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={isPending}
-              >
-                Back
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            disabled={isPending}
+            className="h-[52px] px-8 border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="flex-1 h-[52px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isPending ? (
+              <>
+                <Loader className="animate-spin w-5 h-5" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Continue to Payment
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </Form>
   )
 }

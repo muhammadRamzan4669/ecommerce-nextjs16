@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { addItemToCart } from '@/lib/actions/cart.actions'
 import { CartItem } from '@/types'
 import { Loader } from 'lucide-react'
@@ -23,20 +22,19 @@ export default function AddToCart({ item }: { item: CartItem }) {
   }
 
   return (
-    <Button
+    <button
       onClick={handleAddToCart}
       disabled={isPending}
-      className="w-full"
-      size="lg"
+      className="w-full h-[52px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
     >
       {isPending ? (
         <>
-          <Loader className="animate-spin mr-2 h-4 w-4" />
-          Adding to cart...
+          <Loader className="animate-spin h-5 w-5" />
+          Adding...
         </>
       ) : (
-        'Add to cart'
+        'Add to Cart'
       )}
-    </Button>
+    </button>
   )
 }

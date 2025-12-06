@@ -4,5 +4,10 @@
 export { 
   getLatestProducts, 
   getProductBySlug, 
-  getAllProductSlugs 
+  getAllProductSlugs,
+  getFilteredProducts,
+  getAllCategories,
+  searchProducts,
 } from '../queries/product.queries';
+
+export type { ProductFilterParams } from '../queries/product.queries';
