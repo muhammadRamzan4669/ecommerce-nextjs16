@@ -42,12 +42,12 @@ export default function Footer() {
     <footer className="bg-[#F0F0F0] dark:bg-[#1a1a1a] pt-[140px] lg:pt-[188px]">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-[110px] pb-12 lg:pb-[50px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-[110px] pb-12 lg:pb-[50px]">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link 
               href="/" 
-              className={`${integralCF.className} font-bold text-[28px] lg:text-[33px] tracking-tight mb-6 block`}
+              className={`${integralCF.className} font-bold text-[29px] lg:text-[33.45px] mb-6 block`}
             >
               SHOP.CO
             </Link>
@@ -152,7 +152,7 @@ export default function Footer() {
             {paymentMethods.map((method) => (
               <div 
                 key={method}
-                className="h-[30px] w-[46px] bg-white dark:bg-black rounded-[5px] flex items-center justify-center text-[10px] font-medium border border-black/5 dark:border-white/10"
+                className="h-[30px] w-[47px] bg-white dark:bg-black rounded-[5px] flex items-center justify-center text-[10px] font-medium border border-black/5 dark:border-white/10"
               >
                 {method === "Visa" && <VisaIcon />}
                 {method === "Mastercard" && <MastercardIcon />}

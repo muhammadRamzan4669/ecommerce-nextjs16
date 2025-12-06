@@ -35,18 +35,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Star Rating */}
           <div className="flex items-center gap-2">
             <div 
-              className="flex items-center gap-[5px]"
+              className="flex items-center gap-[6.5px]"
               aria-label={`Rating: ${product.rating} out of 5 stars`}
               role="img"
             >
               {[...Array(5)].map((_, i) => (
                 <svg 
                   key={i} 
-                  width="15" 
-                  height="15" 
+                  width="18" 
+                  height="18" 
                   viewBox="0 0 19 19" 
                   fill="none" 
-                  className="lg:w-[19px] lg:h-[19px]"
+                  className="lg:w-[23px] lg:h-[23px]"
                   aria-hidden="true"
                 >
                   <path 
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-[10px] flex-wrap">
             {product.stock > 0 ? (
               <>
                 <data value={Number(product.price)} className="font-bold text-xl lg:text-2xl">
@@ -73,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <span className="font-bold text-xl lg:text-2xl text-black/30 dark:text-white/30 line-through">
                       ${originalPrice}
                     </span>
-                    <span className="px-3.5 py-1.5 bg-[#FF3333]/10 rounded-[62px] text-xs lg:text-sm font-medium text-[#FF3333]">
+                    <span className="px-[14px] py-[6px] bg-[#FF3333]/10 rounded-[62px] text-xs lg:text-sm font-medium text-[#FF3333]">
                       -{discountPercentage}%
                     </span>
                   </>

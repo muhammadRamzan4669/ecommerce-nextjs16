@@ -72,7 +72,7 @@ export default function NewsletterForm() {
             Subscribed!
           </>
         ) : (
-          "Subscribe to Newsletter"
+          "Subscribe"
         )}
       </button>
 

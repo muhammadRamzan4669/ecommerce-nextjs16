@@ -20,7 +20,7 @@ function HeroSection() {
         <div className="flex flex-col lg:flex-row">
           {/* Left Content */}
           <div className="flex-1 px-4 pt-10 pb-6 md:px-8 lg:px-[100px] lg:pt-[103px] lg:pb-[116px]">
-            <h1 className={`${integralCF.className} text-[36px] leading-[34px] md:text-[48px] md:leading-[48px] lg:text-[64px] lg:leading-[64px] font-bold mb-5 lg:mb-8`}>
+            <h1 className={`${integralCF.className} text-[36px] leading-[38px] md:text-[48px] md:leading-[48px] lg:text-[64px] lg:leading-[64px] font-bold mb-5 lg:mb-8`}>
               FIND CLOTHES<br />
               THAT MATCHES<br />
               YOUR STYLE
@@ -37,11 +37,11 @@ function HeroSection() {
 
             {/* Stats */}
             <div className="flex flex-wrap items-center gap-4 mt-6 lg:mt-12">
-              <div className="flex-1 min-w-[100px] text-center md:text-left md:pr-8 md:border-r border-black/10 dark:border-white/10">
+              <div className="flex-1 min-w-[100px] text-center md:text-left pr-4 md:pr-8 border-r border-black/10 dark:border-white/10">
                 <p className={`${integralCF.className} text-2xl md:text-[40px] font-bold`}>200+</p>
                 <p className="text-xs md:text-base text-black/60 dark:text-white/60">International Brands</p>
               </div>
-              <div className="flex-1 min-w-[100px] text-center md:text-left md:px-8 md:border-r border-black/10 dark:border-white/10">
+              <div className="flex-1 min-w-[100px] text-center md:text-left px-4 md:px-8 border-r border-black/10 dark:border-white/10">
                 <p className={`${integralCF.className} text-2xl md:text-[40px] font-bold`}>2,000+</p>
                 <p className="text-xs md:text-base text-black/60 dark:text-white/60">High-Quality Products</p>
               </div>
@@ -53,7 +53,7 @@ function HeroSection() {
           </div>
 
           {/* Right Image */}
-          <div className="relative flex-1 min-h-[400px] lg:min-h-[663px] overflow-hidden">
+          <div className="relative flex-1 min-h-[448px] lg:min-h-[663px] overflow-hidden">
             <Image
               src="/images/banner-1.jpg"
               alt="Hero fashion models"
@@ -69,7 +69,7 @@ function HeroSection() {
               </svg>
             </div>
             <div className="absolute bottom-20 left-10 lg:bottom-40 lg:left-20">
-              <svg width="104" height="104" viewBox="0 0 104 104" fill="none" className="w-16 h-16 lg:w-26 lg:h-26">
+              <svg width="104" height="104" viewBox="0 0 104 104" fill="none" className="w-16 h-16 lg:w-[104px] lg:h-[104px]">
                 <path d="M52 0L63.8 40.2L104 52L63.8 63.8L52 104L40.2 63.8L0 52L40.2 40.2L52 0Z" fill="black" />
               </svg>
             </div>
@@ -107,14 +107,14 @@ async function NewArrivalsSection() {
   return (
     <section className="py-12 lg:py-[72px]">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
-        <h2 className={`${integralCF.className} text-center text-[32px] lg:text-[48px] font-bold mb-8 lg:mb-[55px]`}>
+        <h2 className={`${integralCF.className} text-center text-[32px] lg:text-[48px] font-bold mb-[32px] lg:mb-[55px]`}>
           NEW ARRIVALS
         </h2>
         <ProductList products={products} limit={4} />
         <div className="flex justify-center mt-8 lg:mt-9">
           <Link 
             href="/products" 
-            className="inline-flex items-center justify-center w-full max-w-[218px] h-[52px] border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+            className="inline-flex items-center justify-center w-[218px] h-[52px] border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
           >
             View All
           </Link>
@@ -130,14 +130,14 @@ async function TopSellingSection() {
   return (
     <section className="py-12 lg:py-[72px] border-t border-black/10 dark:border-white/10">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
-        <h2 className={`${integralCF.className} text-center text-[32px] lg:text-[48px] font-bold mb-8 lg:mb-[55px]`}>
+        <h2 className={`${integralCF.className} text-center text-[32px] lg:text-[48px] font-bold mb-[32px] lg:mb-[55px]`}>
           TOP SELLING
         </h2>
         <ProductList products={products} limit={4} />
         <div className="flex justify-center mt-8 lg:mt-9">
           <Link 
             href="/products" 
-            className="inline-flex items-center justify-center w-full max-w-[218px] h-[52px] border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+            className="inline-flex items-center justify-center w-[218px] h-[52px] border border-black/10 dark:border-white/10 rounded-[62px] text-base font-medium hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
           >
             View All
           </Link>
@@ -152,12 +152,12 @@ function BrowseByStyleSection() {
   return (
     <section className="py-12 lg:py-[70px]">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
-        <div className="bg-[#F0F0F0] dark:bg-[#1a1a1a] rounded-[40px] p-6 lg:px-16 lg:py-[70px]">
+        <div className="bg-[#F0F0F0] dark:bg-[#1a1a1a] rounded-[40px] p-[24px] lg:px-[64px] lg:py-[70px]">
           <h2 className={`${integralCF.className} text-center text-[32px] lg:text-[48px] font-bold mb-8 lg:mb-16`}>
             BROWSE BY DRESS STYLE
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
             {/* Casual - Large */}
             <StyleCard 
               title="Casual" 
@@ -202,8 +202,7 @@ function StyleCard({ title, image, className }: { title: string; image: string; 
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-      <h3 className={`${integralCF.className} absolute top-6 left-6 text-2xl lg:text-[36px] font-bold text-white`}>
+      <h3 className={`${integralCF.className} absolute top-[25px] left-[36px] text-2xl lg:text-[36px] font-bold text-black`}>
         {title}
       </h3>
     </Link>
@@ -266,11 +265,11 @@ function HappyCustomersSection() {
 
 function TestimonialCard({ name, rating, text, verified }: { name: string; rating: number; text: string; verified: boolean }) {
   return (
-    <div className="flex-shrink-0 w-[300px] md:w-[400px] p-6 lg:p-8 border border-black/10 dark:border-white/10 rounded-[20px] snap-start">
+    <div className="flex-shrink-0 w-[400px] p-[28px] lg:p-[32px] border border-black/10 dark:border-white/10 rounded-[20px] snap-start">
       {/* Stars */}
       <div className="flex gap-1.5 mb-4">
         {[...Array(rating)].map((_, i) => (
-          <svg key={i} width="22" height="20" viewBox="0 0 22 20" fill="#FFC633">
+          <svg key={i} width="23" height="21" viewBox="0 0 22 20" fill="#FFC633">
             <path d="M11 0L13.4903 6.80041L20.8779 7.02786L14.9673 11.2696L16.9511 18.0721L11 14.14L5.04894 18.0721L7.03272 11.2696L1.12215 7.02786L8.50974 6.80041L11 0Z" />
           </svg>
         ))}
@@ -300,7 +299,7 @@ function NewsletterSection() {
   return (
     <section className="py-9 lg:py-0">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
-        <div className="bg-black dark:bg-white rounded-[20px] px-6 py-9 lg:px-16 lg:py-9 lg:-mb-[90px] relative z-10">
+        <div className="bg-black dark:bg-white rounded-[20px] px-6 py-9 lg:px-16 lg:py-9 -mb-[88px] relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
             <h2 className={`${integralCF.className} text-white dark:text-black text-[32px] lg:text-[40px] font-bold max-w-[551px]`}>
               STAY UP TO DATE ABOUT OUR LATEST OFFERS

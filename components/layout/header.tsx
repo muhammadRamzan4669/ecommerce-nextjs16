@@ -20,7 +20,7 @@ export default async function Header() {
   return (
     <header className="w-full bg-white dark:bg-black border-b border-black/10 dark:border-white/10 sticky top-0 z-50">
       {/* Top Banner */}
-      <div className="bg-black dark:bg-white text-white dark:text-black text-center py-2 text-xs md:text-sm">
+      <div className="bg-black dark:bg-white text-white dark:text-black text-center py-[9px] text-xs md:text-sm">
         <div className="max-w-[1440px] mx-auto px-4 flex items-center justify-center gap-2">
           <span>Sign up and get 20% off to your first order.</span>
           <Link href="/sign-up" className="font-medium underline underline-offset-2">
@@ -41,7 +41,7 @@ export default async function Header() {
           {/* Logo */}
           <Link 
             href="/" 
-            className={`${integralCF.className} font-bold text-[25px] lg:text-[32px] tracking-tight`}
+            className={`${integralCF.className} font-bold text-[25px] lg:text-[32px]`}
           >
             SHOP.CO
           </Link>
