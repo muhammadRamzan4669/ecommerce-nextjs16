@@ -9,6 +9,10 @@ export {
   getAllCategories,
   searchProducts,
   getProductReviews,
+  getNewArrivals,
+  getSaleProducts,
+  getAllBrands,
+  getProductsByBrand,
 } from '../queries/product.queries';
 
 export type { ProductFilterParams } from '../queries/product.queries';

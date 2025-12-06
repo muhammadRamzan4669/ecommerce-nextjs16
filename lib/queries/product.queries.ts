@@ -212,6 +212,149 @@ export async function searchProducts(query: string) {
   }
 }
 
+// Get new arrivals (products created in last 30 days, or most recent)
+export async function getNewArrivals(params: ProductFilterParams = {}) {
+  "use cache";
+  cacheTag("products", "new-arrivals");
+  cacheLife("hours");
+
+  const { page = 1, limit = 9 } = params;
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  try {
+    const where = {
+      createdAt: { gte: thirtyDaysAgo },
+    };
+
+    const totalCount = await prisma.product.count({ where });
+
+    const products = await prisma.product.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      products: JSON.parse(JSON.stringify(products)),
+      totalCount,
+      totalPages,
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Error fetching new arrivals:", error);
+    return {
+      products: [],
+      totalCount: 0,
+      totalPages: 0,
+      currentPage: 1,
+    };
+  }
+}
+
+// Get sale products (products with discount > 0)
+export async function getSaleProducts(params: ProductFilterParams = {}) {
+  "use cache";
+  cacheTag("products", "sale-products");
+  cacheLife("hours");
+
+  const { page = 1, limit = 9 } = params;
+
+  try {
+    const where = {
+      discount: { gt: 0 },
+    };
+
+    const totalCount = await prisma.product.count({ where });
+
+    const products = await prisma.product.findMany({
+      where,
+      orderBy: { discount: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      products: JSON.parse(JSON.stringify(products)),
+      totalCount,
+      totalPages,
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Error fetching sale products:", error);
+    return {
+      products: [],
+      totalCount: 0,
+      totalPages: 0,
+      currentPage: 1,
+    };
+  }
+}
+
+// Get all unique brands
+export async function getAllBrands() {
+  "use cache";
+  cacheTag("products", "brands");
+  cacheLife("hours");
+
+  try {
+    const products = await prisma.product.findMany({
+      select: { brand: true },
+      distinct: ["brand"],
+    });
+    return products.map((p) => p.brand);
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+    return [];
+  }
+}
+
+// Get products by brand
+export async function getProductsByBrand(brand: string, params: ProductFilterParams = {}) {
+  "use cache";
+  cacheTag("products", `brand-${brand}`);
+  cacheLife("hours");
+
+  const { page = 1, limit = 9 } = params;
+
+  try {
+    const where = {
+      brand: { equals: brand, mode: "insensitive" as const },
+    };
+
+    const totalCount = await prisma.product.count({ where });
+
+    const products = await prisma.product.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      products: JSON.parse(JSON.stringify(products)),
+      totalCount,
+      totalPages,
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Error fetching products by brand:", error);
+    return {
+      products: [],
+      totalCount: 0,
+      totalPages: 0,
+      currentPage: 1,
+    };
+  }
+}
+
 // Get product reviews
 export async function getProductReviews(productId: string) {
   "use cache";
