@@ -28,9 +28,22 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   trustedOrigins: [process.env.BETTER_AUTH_URL!],
 
+  // Base URL for API routes
+  baseURL: process.env.BETTER_AUTH_URL!,
+
   // Session configuration (30 days like NextAuth example)
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days in seconds
     updateAge: 60 * 60 * 24, // Update session every 24 hours
+  },
+
+  // User configuration to include custom fields
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "user",
+      },
+    },
   },
 });
