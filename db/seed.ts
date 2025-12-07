@@ -66,11 +66,11 @@ async function main() {
   // Create reviews for products
   console.log('Seeding reviews...');
   let reviewCount = 0;
-  for (const product of products.slice(0, 10)) {
-    // Add 2-4 reviews per featured product
-    const numReviews = Math.floor(Math.random() * 3) + 2;
+  for (const product of products) {
+    // Add 3-8 reviews per product for more realistic data
+    const numReviews = Math.floor(Math.random() * 6) + 3;
     for (let i = 0; i < numReviews; i++) {
-      const reviewData = sampleData.reviews[i % sampleData.reviews.length];
+      const reviewData = sampleData.reviews[Math.floor(Math.random() * sampleData.reviews.length)];
       const user = createdUsers[Math.floor(Math.random() * createdUsers.length)];
       
       await prisma.review.create({
