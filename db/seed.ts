@@ -1,7 +1,7 @@
 import { PrismaClient } from "@/lib/generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
-import sampleData from "./sample-data";
+import sampleData from "./figma-sample-data";
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -66,7 +66,34 @@ async function main() {
   // Create reviews for products
   console.log('Seeding reviews...');
   let reviewCount = 0;
+  
+  // First, create specific reviews for "One Life Graphic T-shirt"
+  const oneLifeProduct = products.find(p => p.slug === 'one-life-graphic-t-shirt');
+  if (oneLifeProduct && sampleData.productReviews) {
+    for (const reviewData of sampleData.productReviews) {
+      const user = createdUsers.find(u => u.name === reviewData.userName);
+      if (user) {
+        await prisma.review.create({
+          data: {
+            productId: oneLifeProduct.id,
+            userId: user.id,
+            rating: reviewData.rating,
+            title: reviewData.title,
+            comment: reviewData.comment,
+            isVerified: reviewData.isVerified,
+            createdAt: reviewData.createdAt,
+          },
+        });
+        reviewCount++;
+      }
+    }
+  }
+  
+  // Then, create generic reviews for other products
   for (const product of products) {
+    // Skip "One Life Graphic T-shirt" since we already added specific reviews
+    if (product.slug === 'one-life-graphic-t-shirt') continue;
+    
     // Add 3-8 reviews per product for more realistic data
     const numReviews = Math.floor(Math.random() * 6) + 3;
     for (let i = 0; i < numReviews; i++) {
