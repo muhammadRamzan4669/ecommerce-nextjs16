@@ -1,112 +1,313 @@
 // Polar.sh Webhook Handler
-// Receives webhook events from Polar for order and subscription updates
-import { NextRequest, NextResponse } from 'next/server'
+// Uses the official @polar-sh/nextjs Webhooks adapter for secure, type-safe webhook processing
+import { Webhooks } from "@polar-sh/nextjs";
+import { prismaBase } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
-// When POLAR_WEBHOOK_SECRET is set, you can use the official Polar webhook handler:
-// import { Webhooks } from "@polar-sh/nextjs";
-// export const POST = Webhooks({
-//   webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
-//   onPayload: async (payload) => {
-//     console.log('Received webhook:', payload)
-//   },
-//   onOrderCreated: async (order) => {
-//     // Handle new orders - update database, send confirmation email, etc.
-//     console.log('Order created:', order)
-//   },
-//   onSubscriptionCreated: async (subscription) => {
-//     // Handle new subscriptions
-//     console.log('Subscription created:', subscription)
-//   },
-//   onCustomerStateChanged: async (customerState) => {
-//     // Handle customer state changes
-//     console.log('Customer state changed:', customerState)
-//   },
-// });
+export const POST = Webhooks({
+  webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const signature = request.headers.get('x-polar-signature')
-    const webhookSecret = process.env.POLAR_WEBHOOK_SECRET
+  // Handle checkout.created - Link checkout session to our order
+  onCheckoutCreated: async (payload) => {
+    const checkout = payload.data;
+    logger.info("Checkout created", { checkoutId: checkout.id });
 
-    // Verify webhook signature in production
-    if (webhookSecret) {
-      if (!signature) {
-        console.warn('Missing webhook signature')
-        return NextResponse.json(
-          { error: 'Missing signature' },
-          { status: 401 }
-        )
+    // If metadata contains orderId, link checkout to order
+    const orderId = checkout.metadata?.orderId as string | undefined;
+    if (orderId) {
+      try {
+        // Check if already processed (idempotency)
+        const existingOrder = await prismaBase.order.findUnique({
+          where: { polarCheckoutId: checkout.id },
+        });
+
+        if (existingOrder) {
+          logger.info("Checkout already linked (idempotent)", {
+            checkoutId: checkout.id,
+          });
+          return;
+        }
+
+        await prismaBase.order.update({
+          where: { id: orderId },
+          data: {
+            polarCheckoutId: checkout.id,
+            polarCustomerId: checkout.customerId ?? null,
+          },
+        });
+
+        logger.info("Order linked to checkout", {
+          orderId,
+          checkoutId: checkout.id,
+        });
+      } catch (error) {
+        logger.error("Failed to link checkout to order", {
+          error: error instanceof Error ? error.message : "Unknown error",
+          checkoutId: checkout.id,
+          orderId,
+        });
+      }
+    }
+  },
+
+  // Handle checkout.updated - Track checkout status changes
+  onCheckoutUpdated: async (payload) => {
+    const checkout = payload.data;
+    logger.info("Checkout updated", {
+      checkoutId: checkout.id,
+      status: checkout.status,
+    });
+
+    try {
+      const order = await prismaBase.order.findUnique({
+        where: { polarCheckoutId: checkout.id },
+      });
+
+      if (order && checkout.customerId) {
+        await prismaBase.order.update({
+          where: { id: order.id },
+          data: {
+            polarCustomerId: checkout.customerId,
+          },
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to update checkout", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        checkoutId: checkout.id,
+      });
+    }
+  },
+
+  // Handle order.created - Create or update order record with Polar order ID
+  onOrderCreated: async (payload) => {
+    const polarOrder = payload.data;
+    logger.info("Order created", {
+      polarOrderId: polarOrder.id,
+      checkoutId: polarOrder.checkoutId,
+    });
+
+    try {
+      // Check if already processed (idempotency)
+      const existingOrder = await prismaBase.order.findUnique({
+        where: { polarOrderId: polarOrder.id },
+      });
+
+      if (existingOrder) {
+        logger.info("Order already processed (idempotent)", {
+          polarOrderId: polarOrder.id,
+        });
+        return;
       }
 
-      // In production with @polar-sh/nextjs, signature verification is automatic
-      // For manual verification, you would use crypto to verify HMAC
+      // Find order by checkout ID
+      if (polarOrder.checkoutId) {
+        const order = await prismaBase.order.findUnique({
+          where: { polarCheckoutId: polarOrder.checkoutId },
+        });
+
+        if (order) {
+          await prismaBase.order.update({
+            where: { id: order.id },
+            data: {
+              polarOrderId: polarOrder.id,
+              polarCustomerId: polarOrder.customerId,
+              paymentResult: {
+                id: polarOrder.id,
+                status: "created",
+                amount: polarOrder.netAmount,
+                currency: polarOrder.currency,
+                createdAt: new Date().toISOString(),
+              } as Prisma.InputJsonValue,
+            },
+          });
+
+          logger.info("Order linked to Polar order", {
+            orderId: order.id,
+            polarOrderId: polarOrder.id,
+          });
+        }
+      }
+    } catch (error) {
+      logger.error("Failed to process order.created", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        polarOrderId: polarOrder.id,
+      });
+      throw error;
     }
+  },
 
-    // Handle different event types
-    const { type, data } = body
+  // Handle order.paid - Mark order as paid and update status for fulfillment
+  onOrderPaid: async (payload) => {
+    const polarOrder = payload.data;
+    logger.info("Order paid", {
+      polarOrderId: polarOrder.id,
+      amount: polarOrder.netAmount,
+    });
 
-    switch (type) {
-      case 'order.created':
-        console.log('Order created:', data)
-        // TODO: Update order in database
-        // await prisma.order.create({ ... })
-        break
+    try {
+      // Find order by Polar order ID
+      const existingOrder = await prismaBase.order.findUnique({
+        where: { polarOrderId: polarOrder.id },
+      });
 
-      case 'order.paid':
-        console.log('Order paid:', data)
-        // TODO: Mark order as paid, trigger fulfillment
-        // await prisma.order.update({ where: { id: data.id }, data: { status: 'paid' } })
-        break
+      if (existingOrder?.webhookProcessed) {
+        logger.info("Order payment already processed (idempotent)", {
+          polarOrderId: polarOrder.id,
+        });
+        return;
+      }
 
-      case 'order.refunded':
-        console.log('Order refunded:', data)
-        // TODO: Handle refund
-        break
+      if (existingOrder) {
+        await prismaBase.order.update({
+          where: { id: existingOrder.id },
+          data: {
+            isPaid: true,
+            paidAt: new Date(),
+            status: "PROCESSING",
+            webhookProcessed: true,
+            paymentResult: {
+              id: polarOrder.id,
+              status: "paid",
+              email: polarOrder.customer.email,
+              amount: polarOrder.netAmount,
+              currency: polarOrder.currency,
+              paidAt: new Date().toISOString(),
+            } as Prisma.InputJsonValue,
+          },
+        });
 
-      case 'subscription.created':
-        console.log('Subscription created:', data)
-        // TODO: Create subscription record
-        break
+        logger.info("Order marked as paid", {
+          orderId: existingOrder.id,
+          polarOrderId: polarOrder.id,
+          amount: polarOrder.netAmount,
+        });
 
-      case 'subscription.updated':
-        console.log('Subscription updated:', data)
-        // TODO: Update subscription status
-        break
+        // TODO: Send order confirmation email
+        // TODO: Trigger inventory reduction
+        // TODO: Notify fulfillment team
+      } else {
+        // Try finding by checkout ID as fallback
+        if (polarOrder.checkoutId) {
+          const orderByCheckout = await prismaBase.order.findUnique({
+            where: { polarCheckoutId: polarOrder.checkoutId },
+          });
 
-      case 'subscription.canceled':
-        console.log('Subscription canceled:', data)
-        // TODO: Handle cancellation, revoke access
-        break
+          if (orderByCheckout) {
+            await prismaBase.order.update({
+              where: { id: orderByCheckout.id },
+              data: {
+                polarOrderId: polarOrder.id,
+                polarCustomerId: polarOrder.customerId,
+                isPaid: true,
+                paidAt: new Date(),
+                status: "PROCESSING",
+                webhookProcessed: true,
+                paymentResult: {
+                  id: polarOrder.id,
+                  status: "paid",
+                  email: polarOrder.customer.email,
+                  amount: polarOrder.netAmount,
+                  currency: polarOrder.currency,
+                  paidAt: new Date().toISOString(),
+                } as Prisma.InputJsonValue,
+              },
+            });
 
-      case 'subscription.active':
-        console.log('Subscription activated:', data)
-        // TODO: Grant access
-        break
+            logger.info("Order found by checkout ID and marked as paid", {
+              orderId: orderByCheckout.id,
+              polarOrderId: polarOrder.id,
+            });
+            return;
+          }
+        }
 
-      case 'customer.state.changed':
-        console.log('Customer state changed:', data)
-        // TODO: Update customer status
-        break
-
-      case 'checkout.created':
-        console.log('Checkout created:', data)
-        break
-
-      case 'checkout.updated':
-        console.log('Checkout updated:', data)
-        break
-
-      default:
-        console.log('Unhandled webhook event:', type, data)
+        logger.warn("Order not found for paid event", {
+          polarOrderId: polarOrder.id,
+          checkoutId: polarOrder.checkoutId,
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to mark order as paid", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        polarOrderId: polarOrder.id,
+      });
+      throw error;
     }
+  },
 
-    return NextResponse.json({ received: true, type })
-  } catch (error) {
-    console.error('Webhook error:', error)
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
-  }
-}
+  // Handle order.refunded - Process refund and update order status
+  onOrderRefunded: async (payload) => {
+    const polarOrder = payload.data;
+    logger.info("Order refunded", {
+      polarOrderId: polarOrder.id,
+      amount: polarOrder.netAmount,
+    });
+
+    try {
+      const order = await prismaBase.order.findUnique({
+        where: { polarOrderId: polarOrder.id },
+      });
+
+      if (order) {
+        await prismaBase.order.update({
+          where: { id: order.id },
+          data: {
+            status: "CANCELLED",
+            paymentResult: {
+              ...((order.paymentResult as Record<string, unknown>) || {}),
+              refunded: true,
+              refundedAt: new Date().toISOString(),
+              refundAmount: polarOrder.netAmount,
+            } as Prisma.InputJsonValue,
+          },
+        });
+
+        logger.info("Order refunded", {
+          orderId: order.id,
+          polarOrderId: polarOrder.id,
+          amount: polarOrder.netAmount,
+        });
+
+        // TODO: Send refund confirmation email
+        // TODO: Restore inventory
+      } else {
+        logger.warn("Order not found for refund event", {
+          polarOrderId: polarOrder.id,
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to process refund", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        polarOrderId: polarOrder.id,
+      });
+      throw error;
+    }
+  },
+
+  // Handle subscription events for future implementation
+  onSubscriptionCreated: async (payload) => {
+    logger.info("Subscription created", { subscriptionId: payload.data.id });
+  },
+
+  onSubscriptionUpdated: async (payload) => {
+    logger.info("Subscription updated", { subscriptionId: payload.data.id });
+  },
+
+  onSubscriptionCanceled: async (payload) => {
+    logger.info("Subscription canceled", { subscriptionId: payload.data.id });
+  },
+
+  onSubscriptionRevoked: async (payload) => {
+    logger.info("Subscription revoked", { subscriptionId: payload.data.id });
+  },
+
+  // Catch-all handler for any events not explicitly handled
+  onPayload: async (payload) => {
+    logger.info("Webhook event received", {
+      type: payload.type,
+      timestamp: new Date().toISOString(),
+    });
+  },
+});
