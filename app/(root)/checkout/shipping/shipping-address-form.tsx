@@ -38,14 +38,56 @@ export default function ShippingAddressForm({ address }: { address?: ShippingAdd
 
   const onSubmit = (data: ShippingAddress) => {
     startTransition(async () => {
-      const result = await updateUserAddress(data)
+      // First, update user address
+      const addressResult = await updateUserAddress(data)
 
-      if (result.success) {
-        toast.success(result.message)
-        // Redirect to Polar checkout
-        router.push('/api/checkout?productId=cart')
-      } else {
-        toast.error(result.message)
+      if (!addressResult.success) {
+        toast.error(addressResult.message)
+        return
+      }
+
+      // Then create order from cart
+      const { createOrder } = await import('@/lib/actions/order.actions')
+      const orderResult = await createOrder()
+
+      if (!orderResult.success) {
+        toast.error(orderResult.message)
+        return
+      }
+
+      if (!orderResult.orderId) {
+        toast.error('Failed to create order')
+        return
+      }
+
+      // Finally, create Polar checkout session
+      try {
+        const response = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: orderResult.orderId,
+          }),
+        })
+
+        const checkoutData = await response.json()
+
+        if (!response.ok) {
+          toast.error(checkoutData.error || 'Failed to create checkout session')
+          return
+        }
+
+        if (checkoutData.checkoutUrl) {
+          // Redirect to Polar checkout or success page
+          window.location.href = checkoutData.checkoutUrl
+        } else {
+          toast.error('Invalid checkout response')
+        }
+      } catch (error) {
+        toast.error('Failed to initiate checkout')
+        console.error('Checkout error:', error)
       }
     })
   }

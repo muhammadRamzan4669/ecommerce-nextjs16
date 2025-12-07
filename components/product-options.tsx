@@ -162,7 +162,7 @@ export default function ProductOptions({ product, colors, sizes }: ProductOption
         <button
           onClick={handleAddToCart}
           disabled={isPending || product.stock === 0}
-          className="flex-1 h-[52px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 py-4 px-[54px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isPending ? (
             <>

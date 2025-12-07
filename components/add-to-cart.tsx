@@ -25,7 +25,7 @@ export default function AddToCart({ item }: { item: CartItem }) {
     <button
       onClick={handleAddToCart}
       disabled={isPending}
-      className="w-full h-[52px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      className="w-full py-4 px-[54px] bg-black dark:bg-white text-white dark:text-black rounded-[62px] text-base font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
     >
       {isPending ? (
         <>

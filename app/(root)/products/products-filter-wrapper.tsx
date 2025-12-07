@@ -8,7 +8,9 @@ type ProductsFilterWrapperProps = {
   categories: string[];
 };
 
-export default function ProductsFilterWrapper({ categories }: ProductsFilterWrapperProps) {
+export default function ProductsFilterWrapper({
+  categories,
+}: ProductsFilterWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -44,7 +46,10 @@ export default function ProductsFilterWrapper({ categories }: ProductsFilterWrap
             </div>
 
             <div className="p-4">
-              <ProductFilters categories={categories} onApply={() => setIsOpen(false)} />
+              <ProductFilters
+                categories={categories}
+                onApplyAction={() => setIsOpen(false)}
+              />
             </div>
           </div>
         </div>
