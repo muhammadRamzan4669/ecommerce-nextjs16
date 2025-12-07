@@ -49,7 +49,11 @@ export default function SignUpPage() {
           validationResult.error.issues.forEach((issue) => {
             if (issue.path[0]) {
               errors[
-                issue.path[0] as "name" | "email" | "password" | "confirmPassword"
+                issue.path[0] as
+                  | "name"
+                  | "email"
+                  | "password"
+                  | "confirmPassword"
               ] = issue.message;
             }
           });
@@ -71,11 +75,11 @@ export default function SignUpPage() {
         } else {
           return { error: result.message || "Failed to create account" };
         }
-      } catch (err) {
+      } catch {
         return { error: "An error occurred. Please try again." };
       }
     },
-    {}
+    {},
   );
 
   return (
@@ -91,7 +95,7 @@ export default function SignUpPage() {
       {/* Sign Up Form */}
       <form action={formAction} className="space-y-4">
         {state.error && (
-          <div 
+          <div
             className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md"
             role="alert"
             aria-live="assertive"
@@ -112,13 +116,20 @@ export default function SignUpPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.name}
-            aria-describedby={state.fieldErrors?.name ? "name-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.name ? "name-error" : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.name ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.name && (
-            <p id="name-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="name-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.name}
             </p>
           )}
@@ -136,13 +147,20 @@ export default function SignUpPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.email}
-            aria-describedby={state.fieldErrors?.email ? "email-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.email ? "email-error" : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.email ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.email && (
-            <p id="email-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="email-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.email}
             </p>
           )}
@@ -160,13 +178,20 @@ export default function SignUpPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.password}
-            aria-describedby={state.fieldErrors?.password ? "password-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.password ? "password-error" : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.password ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.password && (
-            <p id="password-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="password-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.password}
             </p>
           )}
@@ -184,13 +209,22 @@ export default function SignUpPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.confirmPassword}
-            aria-describedby={state.fieldErrors?.confirmPassword ? "confirmPassword-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.confirmPassword
+                ? "confirmPassword-error"
+                : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.confirmPassword ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.confirmPassword && (
-            <p id="confirmPassword-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="confirmPassword-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.confirmPassword}
             </p>
           )}

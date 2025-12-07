@@ -55,11 +55,11 @@ export default function SignInPage() {
         } else {
           return { error: result.message || "Invalid email or password" };
         }
-      } catch (err) {
+      } catch {
         return { error: "An error occurred. Please try again." };
       }
     },
-    {}
+    {},
   );
 
   return (
@@ -75,7 +75,7 @@ export default function SignInPage() {
       {/* Sign In Form */}
       <form action={formAction} className="space-y-4">
         {state.error && (
-          <div 
+          <div
             className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-md"
             role="alert"
             aria-live="assertive"
@@ -96,13 +96,20 @@ export default function SignInPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.email}
-            aria-describedby={state.fieldErrors?.email ? "email-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.email ? "email-error" : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.email ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.email && (
-            <p id="email-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="email-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.email}
             </p>
           )}
@@ -120,13 +127,20 @@ export default function SignInPage() {
             required
             disabled={isPending}
             aria-invalid={!!state.fieldErrors?.password}
-            aria-describedby={state.fieldErrors?.password ? "password-error" : undefined}
+            aria-describedby={
+              state.fieldErrors?.password ? "password-error" : undefined
+            }
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 ${
               state.fieldErrors?.password ? "border-red-500" : ""
             }`}
           />
           {state.fieldErrors?.password && (
-            <p id="password-error" className="text-sm text-red-500" role="alert" aria-live="polite">
+            <p
+              id="password-error"
+              className="text-sm text-red-500"
+              role="alert"
+              aria-live="polite"
+            >
               {state.fieldErrors.password}
             </p>
           )}
@@ -146,7 +160,9 @@ export default function SignInPage() {
 
       {/* Sign Up Link */}
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Don&apos;t have an account? </span>
+        <span className="text-muted-foreground">
+          Don&apos;t have an account?{" "}
+        </span>
         <Link
           href="/sign-up"
           className="font-medium text-primary hover:underline"

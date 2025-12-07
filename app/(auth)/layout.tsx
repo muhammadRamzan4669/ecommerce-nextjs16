@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { integralCF } from "@/lib/fonts";
 
+// Static copyright year - update annually or use a client component for dynamic year
+const COPYRIGHT_YEAR = 2025;
+
 export default function AuthLayout({
   children,
 }: {
@@ -10,12 +13,13 @@ export default function AuthLayout({
     <div className="flex min-h-screen flex-col">
       {/* Auth Header */}
       <header className="w-full border-b">
-        <div className="wrapper flex-between">
-          <div
+        <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-4">
+          <Link
+            href="/"
             className={`${integralCF.className} font-bold text-[25px] lg:text-[32px]`}
           >
-            <Link href="/">LYNX.SHOP</Link>
-          </div>
+            SHOP.CO
+          </Link>
         </div>
       </header>
 
@@ -26,8 +30,8 @@ export default function AuthLayout({
 
       {/* Auth Footer */}
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        <div className="wrapper">
-          © 2025 LYNX.SHOP. All rights reserved.
+        <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
+          © {COPYRIGHT_YEAR} SHOP.CO. All rights reserved.
         </div>
       </footer>
     </div>

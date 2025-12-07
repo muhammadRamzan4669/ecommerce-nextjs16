@@ -14,7 +14,7 @@ import type { CartItem } from "@/types";
  */
 async function persistSessionCart(userId: string) {
   const cookieStore = await cookies();
-  const sessionCartId = cookieStore.get('sessionCartId')?.value;
+  const sessionCartId = cookieStore.get("sessionCartId")?.value;
 
   if (!sessionCartId) {
     return;
@@ -43,7 +43,7 @@ async function persistSessionCart(userId: string) {
       // Merge items
       sessionItems.forEach((sessionItem) => {
         const existingItemIndex = userItems.findIndex(
-          (item) => item.productId === sessionItem.productId
+          (item) => item.productId === sessionItem.productId,
         );
 
         if (existingItemIndex > -1) {
@@ -56,9 +56,12 @@ async function persistSessionCart(userId: string) {
       });
 
       // Calculate prices with proper imports
-      const { roundTo2 } = await import('@/lib/utils');
+      const { roundTo2 } = await import("@/lib/utils");
       const itemsPrice = roundTo2(
-        userItems.reduce((acc: number, item) => acc + Number(item.price) * item.qty, 0)
+        userItems.reduce(
+          (acc: number, item) => acc + Number(item.price) * item.qty,
+          0,
+        ),
       );
       const shippingPrice = roundTo2(itemsPrice > 100 ? 0 : 10);
       const taxPrice = roundTo2(0.15 * itemsPrice);
@@ -92,9 +95,9 @@ async function persistSessionCart(userId: string) {
       });
     }
 
-    logger.log('[Persist Cart] Session cart merged with user cart');
+    logger.log("[Persist Cart] Session cart merged with user cart");
   } catch (error) {
-    logger.error('[Persist Cart] Error:', error);
+    logger.error("[Persist Cart] Error:", error);
   }
 }
 
@@ -123,7 +126,10 @@ export async function signUpWithCredentials({
       },
     });
 
-    logger.log("[Server Action] Sign up result:", result ? "Success" : "Failed");
+    logger.log(
+      "[Server Action] Sign up result:",
+      result ? "Success" : "Failed",
+    );
 
     if (!result || !result.user) {
       return {
@@ -135,9 +141,9 @@ export async function signUpWithCredentials({
     // Set the session cookie after successful sign-up
     if (result.token) {
       const cookieStore = await cookies();
-      
+
       logger.log("[Server Action] Setting session cookie");
-      
+
       cookieStore.set("better-auth.session_token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -147,7 +153,10 @@ export async function signUpWithCredentials({
       });
     }
 
-    logger.log("[Server Action] Sign up successful for user:", result.user.email);
+    logger.log(
+      "[Server Action] Sign up successful for user:",
+      result.user.email,
+    );
 
     return {
       success: true,
@@ -156,7 +165,7 @@ export async function signUpWithCredentials({
     };
   } catch (error: unknown) {
     logger.error("[Server Action] Sign up error:", error);
-    
+
     return {
       success: false,
       message: formatError(error),
@@ -177,7 +186,7 @@ export async function signInWithCredentials({
 }) {
   try {
     logger.log("[Server Action] Attempting sign in for:", email);
-    
+
     // Use Better Auth's server-side API to sign in
     const result = await auth.api.signInEmail({
       body: {
@@ -186,7 +195,10 @@ export async function signInWithCredentials({
       },
     });
 
-    logger.log("[Server Action] Sign in result:", result ? "Success" : "Failed");
+    logger.log(
+      "[Server Action] Sign in result:",
+      result ? "Success" : "Failed",
+    );
 
     if (!result || !result.user) {
       return {
@@ -198,7 +210,7 @@ export async function signInWithCredentials({
     // Handle users with no name - use email prefix
     if (!result.user.name || result.user.name === "no_name") {
       const nameFromEmail = result.user.email.split("@")[0];
-      
+
       // Update user in database
       await prisma.user.update({
         where: { id: result.user.id },
@@ -212,9 +224,9 @@ export async function signInWithCredentials({
     // We need to manually set the session cookie in the response
     if (result.token) {
       const cookieStore = await cookies();
-      
+
       logger.log("[Server Action] Setting session cookie");
-      
+
       // Set the session token cookie
       cookieStore.set("better-auth.session_token", result.token, {
         httpOnly: true,
@@ -228,7 +240,10 @@ export async function signInWithCredentials({
       await persistSessionCart(result.user.id);
     }
 
-    logger.log("[Server Action] Sign in successful for user:", result.user.email);
+    logger.log(
+      "[Server Action] Sign in successful for user:",
+      result.user.email,
+    );
 
     return {
       success: true,
@@ -239,7 +254,8 @@ export async function signInWithCredentials({
     logger.error("[Server Action] Sign in error:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Invalid email or password",
+      message:
+        error instanceof Error ? error.message : "Invalid email or password",
     };
   }
 }
@@ -250,9 +266,9 @@ export async function signInWithCredentials({
 export async function signOut() {
   try {
     logger.log("[Server Action] Attempting sign out");
-    
+
     const headersList = await headers();
-    
+
     // Call Better Auth sign out
     await auth.api.signOut({
       headers: headersList,
@@ -285,7 +301,7 @@ export async function signOut() {
 export async function getSession() {
   try {
     const headersList = await headers();
-    
+
     // Better Auth provides a helper to get session from request
     const session = await auth.api.getSession({
       headers: headersList,
@@ -312,14 +328,16 @@ export async function getSession() {
     }
 
     // Return session with role included - serialize for React 19
-    return JSON.parse(JSON.stringify({
-      ...session,
-      user: {
-        ...session.user,
-        role: user.role,
-      },
-    }));
-  } catch (error) {
+    return JSON.parse(
+      JSON.stringify({
+        ...session,
+        user: {
+          ...session.user,
+          role: user.role,
+        },
+      }),
+    );
+  } catch {
     return null;
   }
 }
@@ -336,7 +354,7 @@ export async function updateUserAddress(data: unknown) {
     if (!session?.user) {
       return {
         success: false,
-        message: 'Unauthorized',
+        message: "Unauthorized",
       };
     }
 
@@ -347,17 +365,18 @@ export async function updateUserAddress(data: unknown) {
       data: { address },
     });
 
-    revalidatePath('/checkout/shipping');
-    revalidatePath('/user/profile');
+    revalidatePath("/checkout/shipping");
+    revalidatePath("/user/profile");
 
     return {
       success: true,
-      message: 'Address updated successfully',
+      message: "Address updated successfully",
     };
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Error updating address',
+      message:
+        error instanceof Error ? error.message : "Error updating address",
     };
   }
 }

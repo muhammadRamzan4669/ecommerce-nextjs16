@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleUserRound, LogOut, User } from "lucide-react";
 import { signOut } from "@/lib/actions/user.actions";
@@ -16,10 +16,7 @@ type UserButtonProps = {
 
 export default function UserButton({ user }: UserButtonProps) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useActionState(
-    (_prevState: boolean, _action: boolean) => !_prevState,
-    false
-  );
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -45,7 +42,7 @@ export default function UserButton({ user }: UserButtonProps) {
     <div className="relative">
       {/* User Avatar Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         aria-label="User menu"
         aria-expanded={isOpen}
