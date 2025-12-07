@@ -6,11 +6,11 @@ import { ShippingAddress } from '@/types'
 import ShippingAddressForm from './shipping-address-form'
 import CheckoutSteps from '@/components/checkout-steps'
 import { integralCF } from '@/lib/fonts'
-import Link from 'next/link'
 import { getCart } from '@/lib/actions/cart.actions'
 import { formatCurrency } from '@/lib/utils'
 import { CartItem } from '@/types'
 import Image from 'next/image'
+import Breadcrumb from '@/components/breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Checkout',
@@ -38,14 +38,13 @@ export default async function ShippingAddressPage() {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-6 lg:py-10">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60 mb-6">
-        <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">Home</Link>
-        <span>/</span>
-        <Link href="/cart" className="hover:text-black dark:hover:text-white transition-colors">Cart</Link>
-        <span>/</span>
-        <span className="text-black dark:text-white">Checkout</span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Cart", href: "/cart" },
+          { label: "Checkout" },
+        ]}
+      />
 
       {/* Page Title */}
       <h1 className={`${integralCF.className} text-[32px] lg:text-[40px] font-bold mb-6`}>

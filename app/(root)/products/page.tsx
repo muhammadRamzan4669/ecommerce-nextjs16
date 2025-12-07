@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductsFilterWrapper from './products-filter-wrapper'
+import Breadcrumb from '@/components/breadcrumb'
 
 export const metadata: Metadata = {
   title: 'All Products',
@@ -215,24 +216,20 @@ export default async function ProductsPage({
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-6 lg:py-10">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60 mb-6">
-        <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <span>/</span>
-        {params.category ? (
-          <>
-            <Link href="/products" className="hover:text-black dark:hover:text-white transition-colors">
-              Products
-            </Link>
-            <span>/</span>
-            <span className="text-black dark:text-white">{params.category}</span>
-          </>
-        ) : (
-          <span className="text-black dark:text-white">Products</span>
-        )}
-      </nav>
+      <Breadcrumb
+        items={
+          params.category
+            ? [
+                { label: "Home", href: "/" },
+                { label: "Products", href: "/products" },
+                { label: params.category },
+              ]
+            : [
+                { label: "Home", href: "/" },
+                { label: "Products" },
+              ]
+        }
+      />
 
       {/* Page Title */}
       <h1 className={`${integralCF.className} text-[32px] lg:text-[40px] font-bold mb-6`}>

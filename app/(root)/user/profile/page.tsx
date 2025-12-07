@@ -8,6 +8,7 @@ import { integralCF } from "@/lib/fonts";
 import { formatCurrency } from "@/lib/utils";
 import { Package, User, MapPin, Clock } from "lucide-react";
 import type { Order } from "@/types";
+import Breadcrumb from "@/components/breadcrumb";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -42,12 +43,12 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-6 lg:py-10">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60 mb-6">
-        <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">Home</Link>
-        <span>/</span>
-        <span className="text-black dark:text-white">My Account</span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "My Account" },
+        ]}
+      />
 
       <h1 className={`${integralCF.className} text-[32px] lg:text-[40px] font-bold mb-8`}>
         MY ACCOUNT

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import Breadcrumb from '@/components/breadcrumb'
 
 export const metadata: Metadata = {
   title: 'New Arrivals',
@@ -188,14 +189,12 @@ export default async function NewArrivalsPage({
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px] py-6 lg:py-10">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60 mb-6">
-        <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <span>/</span>
-        <span className="text-black dark:text-white">New Arrivals</span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "New Arrivals" },
+        ]}
+      />
 
       {/* Page Header */}
       <div className="mb-8">

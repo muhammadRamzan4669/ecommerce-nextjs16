@@ -2,10 +2,10 @@ import { getProductBySlug, getAllProductSlugs, getProductReviews } from "@/lib/a
 import { integralCF } from "@/lib/fonts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import ProductOptions from "@/components/product-options";
 import ImageGallery from "@/components/image-gallery";
 import ProductReviews from "@/components/product-reviews";
+import Breadcrumb from "@/components/breadcrumb";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -62,28 +62,14 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[100px]">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-3 text-base py-5 border-b border-black/10 dark:border-white/10">
-        <Link href="/" className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">
-          Home
-        </Link>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-black/60 dark:text-white/60">
-          <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <Link href="/products" className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">
-          Shop
-        </Link>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-black/60 dark:text-white/60">
-          <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <Link href={`/products?category=${product.category?.toLowerCase()}`} className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">
-          {product.category || "Men"}
-        </Link>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-black/60 dark:text-white/60">
-          <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <span className="text-black dark:text-white">{product.name}</span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Shop", href: "/products" },
+          { label: product.category || "Men", href: `/products?category=${product.category?.toLowerCase()}` },
+          { label: product.name },
+        ]}
+      />
 
       {/* Main Product Section */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 pb-12 lg:pb-20">
