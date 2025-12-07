@@ -1,15 +1,22 @@
 import type { Product } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/utils";
 
 type ProductCardProps = {
   product: Product;
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const discountPercentage = 20; // Could be dynamic from product
-  const originalPrice = Math.round(Number(product.price) * (100 / (100 - discountPercentage)));
-  
+  // Use actual discount from product, default to 0 if not set
+  const discountPercentage = product.discount || 0;
+
+  // Calculate original price if there's a discount
+  const originalPrice =
+    discountPercentage > 0
+      ? Math.round(Number(product.price) * (100 / (100 - discountPercentage)))
+      : null;
+
   return (
     <article className="flex flex-col">
       <Link href={`/product/${product.slug}`} className="block group">
@@ -23,6 +30,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
+          {/* Discount Badge */}
+          {discountPercentage > 0 && (
+            <div className="absolute top-3 left-3 px-2.5 py-1 bg-[#FF3333] rounded-full">
+              <span className="text-xs font-medium text-white">
+                -{discountPercentage}%
+              </span>
+            </div>
+          )}
         </figure>
 
         {/* Product Info */}
@@ -34,55 +49,61 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Star Rating */}
           <div className="flex items-center gap-2">
-            <div 
+            <div
               className="flex items-center gap-[6.5px]"
               aria-label={`Rating: ${product.rating} out of 5 stars`}
               role="img"
             >
               {[...Array(5)].map((_, i) => (
-                <svg 
-                  key={i} 
-                  width="18" 
-                  height="18" 
-                  viewBox="0 0 19 19" 
-                  fill="none" 
+                <svg
+                  key={i}
+                  width="18"
+                  height="18"
+                  viewBox="0 0 19 19"
+                  fill="none"
                   className="lg:w-[23px] lg:h-[23px]"
                   aria-hidden="true"
                 >
-                  <path 
+                  <path
                     d="M9.5 1.5L11.5 7.5L18 7.5L13 11.5L15 17.5L9.5 13.5L4 17.5L6 11.5L1 7.5L7.5 7.5L9.5 1.5Z"
-                    fill={i < Math.floor(Number(product.rating)) ? "#FFC633" : "#E5E7EB"} 
+                    fill={
+                      i < Math.floor(Number(product.rating))
+                        ? "#FFC633"
+                        : "#E5E7EB"
+                    }
                   />
                 </svg>
               ))}
             </div>
             <span className="text-sm lg:text-base text-black/60 dark:text-white/60">
-              {product.rating}/<span className="text-black/40 dark:text-white/40">5</span>
+              {product.rating}/
+              <span className="text-black/40 dark:text-white/40">5</span>
             </span>
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-[10px] flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             {product.stock > 0 ? (
               <>
-                <data value={Number(product.price)} className="font-bold text-xl lg:text-2xl">
-                  ${product.price}
+                <data
+                  value={Number(product.price)}
+                  className="font-bold text-xl lg:text-2xl"
+                >
+                  {formatCurrency(Number(product.price))}
                 </data>
-                {discountPercentage > 0 && (
+                {originalPrice && (
                   <>
                     <span className="font-bold text-xl lg:text-2xl text-black/30 dark:text-white/30 line-through">
-                      ${originalPrice}
+                      {formatCurrency(Number(originalPrice))}
                     </span>
-                    <span className="px-[14px] py-[6px] bg-[#FF3333]/10 rounded-[62px] text-xs lg:text-sm font-medium text-[#FF3333]">
+                    <span className="px-3.5 py-1.5 bg-[#FF3333]/10 rounded-[62px] text-xs lg:text-sm font-medium text-[#FF3333]">
                       -{discountPercentage}%
                     </span>
                   </>
                 )}
               </>
             ) : (
-              <span className="font-medium text-destructive">
-                Out of Stock
-              </span>
+              <span className="font-medium text-destructive">Out of Stock</span>
             )}
           </div>
         </div>

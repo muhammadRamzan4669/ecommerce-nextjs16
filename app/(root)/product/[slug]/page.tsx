@@ -1,5 +1,6 @@
 import { getProductBySlug, getAllProductSlugs, getProductReviews } from "@/lib/actions/product.actions";
 import { integralCF } from "@/lib/fonts";
+import { formatCurrency } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductOptions from "@/components/product-options";
@@ -112,12 +113,12 @@ export default async function ProductDetailsPage({ params }: Props) {
           {/* Price Section */}
           <div className="flex items-center gap-2.5 lg:gap-3 mb-5">
             <span className="font-bold text-2xl lg:text-[32px] lg:leading-[43px]">
-              ${product.price}
+              {formatCurrency(Number(product.price))}
             </span>
             {originalPrice && (
               <>
                 <span className="font-bold text-2xl lg:text-[32px] lg:leading-[43px] text-black/30 dark:text-white/30 line-through">
-                  ${originalPrice}
+                  {formatCurrency(Number(originalPrice))}
                 </span>
                 <div className="px-3.5 py-1.5 bg-[#FF3333]/10 rounded-[62px]">
                   <span className="text-xs lg:text-sm font-medium text-[#FF3333]">-{discountPercentage}%</span>
@@ -127,7 +128,7 @@ export default async function ProductDetailsPage({ params }: Props) {
           </div>
 
           {/* Description */}
-          <p className="text-sm lg:text-base text-black/60 dark:text-white/60 leading-5 lg:leading-[22px]">
+          <p className="text-sm lg:text-base text-black/60 dark:text-white/60 leading-[20px] lg:leading-[22px]">
             {product.description}
           </p>
 

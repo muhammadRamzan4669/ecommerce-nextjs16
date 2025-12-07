@@ -3,11 +3,12 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { SlidersHorizontal, ChevronDown, ChevronUp, X } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 type FilterSidebarProps = {
   categories: string[];
   className?: string;
-  onApply?: () => void;
+  onApplyAction?: () => void;
 };
 
 const colors = [
@@ -23,7 +24,16 @@ const colors = [
   { name: "Black", value: "#000000" },
 ];
 
-const sizes = ["XX-Small", "X-Small", "Small", "Medium", "Large", "X-Large", "XX-Large", "3X-Large"];
+const sizes = [
+  "XX-Small",
+  "X-Small",
+  "Small",
+  "Medium",
+  "Large",
+  "X-Large",
+  "XX-Large",
+  "3X-Large",
+];
 
 const sortOptions = [
   { label: "Most Popular", value: "popular" },
@@ -33,7 +43,11 @@ const sortOptions = [
   { label: "Highest Rated", value: "rating" },
 ];
 
-export function ProductFilters({ categories, className, onApply }: FilterSidebarProps) {
+export function ProductFilters({
+  categories,
+  className,
+  onApplyAction,
+}: FilterSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -77,21 +91,21 @@ export function ProductFilters({ categories, className, onApply }: FilterSidebar
 
       return newParams.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   const applyFilter = (params: Record<string, string | null>) => {
     startTransition(() => {
       const queryString = createQueryString(params);
       router.push(`/products${queryString ? `?${queryString}` : ""}`);
-      onApply?.();
+      onApplyAction?.();
     });
   };
 
   const clearAllFilters = () => {
     startTransition(() => {
       router.push("/products");
-      onApply?.();
+      onApplyAction?.();
     });
   };
 
@@ -187,21 +201,25 @@ export function ProductFilters({ categories, className, onApply }: FilterSidebar
                   }
                   onMouseUp={() =>
                     applyFilter({
-                      minPrice: priceRange.min > 0 ? String(priceRange.min) : null,
-                      maxPrice: priceRange.max < 500 ? String(priceRange.max) : null,
+                      minPrice:
+                        priceRange.min > 0 ? String(priceRange.min) : null,
+                      maxPrice:
+                        priceRange.max < 500 ? String(priceRange.max) : null,
                     })
                   }
                   onTouchEnd={() =>
                     applyFilter({
-                      minPrice: priceRange.min > 0 ? String(priceRange.min) : null,
-                      maxPrice: priceRange.max < 500 ? String(priceRange.max) : null,
+                      minPrice:
+                        priceRange.min > 0 ? String(priceRange.min) : null,
+                      maxPrice:
+                        priceRange.max < 500 ? String(priceRange.max) : null,
                     })
                   }
                   className="w-full accent-black dark:accent-white cursor-pointer"
                 />
                 <div className="flex justify-between text-sm text-black/60 dark:text-white/60">
-                  <span>${priceRange.min}</span>
-                  <span>${priceRange.max}</span>
+                  <span>{formatCurrency(priceRange.min)}</span>
+                  <span>{formatCurrency(priceRange.max)}</span>
                 </div>
               </div>
             )}
@@ -297,7 +315,9 @@ export function SortDropdown() {
       } else {
         params.set("sortBy", value);
       }
-      router.push(`/products${params.toString() ? `?${params.toString()}` : ""}`);
+      router.push(
+        `/products${params.toString() ? `?${params.toString()}` : ""}`,
+      );
     });
   };
 
